@@ -1,0 +1,32 @@
+# WESTPA/OpenMM HDF5 demo
+
+The goal of this is to run a simulation that does the absolute minimal amount of disk IO.
+So, the simulation itself is done in OpenMM, which does not write trajectory files to disk, 
+and gives us immediate access to the simulation results in memory.
+
+
+## Setup 
+
+1. Create your environment with 
+`conda create -c conda-forge -c omnia -n openmm westpa openmm openmmtools python=3.6`
+
+Need python <= 3.7 for OpenMM and <= 3.6 for OpenMMtools.
+
+2. Initialize the system with `minimize_system_gpu.py`.
+
+This takes a topology and structure file and initializes the system.
+The integrator, thermostat, and barostat are all defined here.
+
+This also runs minimization, and 1000 steps of dynamics for equilibration.
+
+This takes ~7.5 minutes on a quad-core 2.8GHz Macbook Pro w/ an Iris Plus 655 1.5GB VRAM iGPU (this matters because it's openGL accelerated).
+
+3. Run `./init.sh`
+
+4. Run `./run.sh`
+
+You should be able to cancel it mid-iteration, then re-run with `run.sh`, and have it restart from the previous iteration.
+
+If it's hanging on a single segment left in an iteration after restarting, use `w_truncate` to scrap the previous iteration.
+I remember from a while ago that sometimes it was necessary to do that before restarting.
+
